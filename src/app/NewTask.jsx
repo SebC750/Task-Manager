@@ -30,14 +30,14 @@ const NewTask = ({ editingTask = null, clearEditingTask = () => {} }) => {
     try {
       if (editingTask) {
         
-        await fetch(`http://localhost:3000/api/tasks/${editingTask.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API}/api/tasks/${editingTask.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)
         });
       } else {
         
-        await fetch("http://localhost:3000/api/tasks", {
+        await fetch(`${process.env.NEXT_PUBLIC_API}/api/tasks`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)

@@ -1,10 +1,9 @@
-import Image from "next/image";
 import Navbar from "./Navbar";
 import NewTask from "./NewTask";
 import TaskList from "./TaskList"
 async function getData() {
   try {
-    const response = await fetch("http://localhost:3000/api/tasks");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/tasks`);
     const data = await response.json();
     console.log(data)
     return data.data;
@@ -17,7 +16,7 @@ export default async function Home() {
   return (
     <div>
       <Navbar />
-      <div className="mx-20 mt-5">
+      <div className="lg:mx-20 mx-36 mt-20 lg:mt-5 ">
        <TaskList tasks={tasks}/>
       </div>
       <NewTask />

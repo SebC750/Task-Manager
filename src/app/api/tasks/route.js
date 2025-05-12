@@ -1,30 +1,25 @@
-import mysql from "mysql2/promise"
-import { getParamKeys } from "next/dist/server/request/fallback-params";
-import { NextResponse, NextRequest } from 'next/server';
-const db_cred = {
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    user: process.env.USER
-}
-
+import { NextResponse} from 'next/server';
+import db from "./db"
 export async function GET() {
     try {
-        const connection = await mysql.createConnection(db_cred);
-        const [rows] = await connection.execute("SELECT * FROM tasks");
-        return NextResponse.json({ "data": rows })
+        const allTasks = await db.collection("tasks").get()
+        const taskDocs = allTasks.docs.map((task) => ({
+            id: task.id,
+            ...task.data()
+        }))    
+        return NextResponse.json({ "data": taskDocs }, {status: 200})
     } catch (e) {
-        console.log(e)
+        return NextResponse.json({ "message": "SERVER ERROR: "+e }, {status: 500})
     }
 }
 
 export async function POST(req) {
     try {
-        const { name, description, priority } = await req.json()
-        const connection = await mysql.createConnection(db_cred);
-        await connection.execute("INSERT INTO tasks(name, description, priority) VALUES (?,?,?);", [name, description, priority])
-        return NextResponse.json({ "message": "Successfully created." })
+        const payload = await req.json();
+        await db.collection("tasks").doc().set(payload)
+        return NextResponse.json({ "message": "Successfully created." }, {status: 200})
     } catch (e) {
-        console.log(e)
+        return NextResponse.json({ "message": "SERVER ERROR: "+e }, {status: 500})
     }
 }
 
